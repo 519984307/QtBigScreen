@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="zh-CN">
+<meta http-equiv="Expires" content="0">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Cache-control" content="no-cache">
+<meta http-equiv="Cache" content="no-cache">
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<link href="css/bootstrap.css" rel="stylesheet">
+	<link href="font/font.css" rel="stylesheet">
+	<style>
+		.blur {
+			background: transparent;
+			backdrop-filter: blur(10px);
+			-webkit-backdrop-filter: blur(10px);
+		}
+
+		.blur::after {
+			background-color: #ffffff2f;
+		}
+
+		.zoomImage {
+			width: 100%;
+			height: 0;
+			padding-bottom: 75%;
+			overflow: hidden;
+			background-position: center center;
+			background-repeat: no-repeat;
+			-webkit-background-size: cover;
+			-moz-background-size: cover;
+			background-size: cover;
+		}
+	</style>
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>主页</title>
+</head>
+
+<body
+	style="padding-top: 70px;background-image:url('images/bg.jpeg');background-position: center center;background-repeat: no-repeat;-webkit-background-size: cover;-moz-background-size: cover;background-size: cover;"
+	data-spy="scroll" data-target=".navbart" data-offset="1">
+	<iframe frameborder="0" style="background:transparent;width: 0px;height:0px;" id="ifra" src="#"
+		onload="this.src='#'">
+	</iframe>
+	<script src="js/jquery-3.3.1.min.js"></script>
+	<script src="js/popper.min.js"></script>
+	<script src="js/bootstrap.js"></script>
+	<script src="js/bootstrap.bundle.js"></script>
+	<script src="js/time.js"></script>
+	<script src="LoadNavBar.js"></script>
+	<div class="container-fluid" id="container">
+		<div class="p-2 flex-grow-1">
+			<div class="p-2 flex-grow-1">
+				<div class="container-fluid">
+					<div class="h-25">
+						<div class="progress align-content-center m-auto shadow-lg blur" style="height:30px;">
+							<div class="progress-bar progress-bar-animated" id="classover"
+								style="width:0%;color:orange;text-shadow:1px;">
+							</div>
+							<script>
+								var a, b, d, f, g;
+								var h = [];
+								var m = [];
+								var e = [];
+								var c = [];
+								a = classtime.split(".");
+								for (f in a) {
+									e.push(a[f].split(","));
+								}
+								for (d in e) {
+									for (g in e[d]) {
+										if (e[d][g].indexOf(":") != -1) {
+											h.push(Number(e[d][g].split(":")[0]));
+											m.push(Number(e[d][g].split(":")[1]));
+										}
+										else {
+											c.push(Number(e[d][g]));
+										}
+									}
+								}
+								var date = new Date();
+								var hour = date.getHours();
+								var minute = date.getMinutes();
+								var tempminute = -1;
+								var tempclass = -1;
+								function class1() {
+									date = new Date();
+									hour = date.getHours();
+									minute = date.getMinutes();
+									tempminute = -1;
+									tempclass = -1;
+									for (x in h) {
+										if (m[x] + c[x] + (h[x] * 60) - (minute + (hour * 60)) <= c[x]) {
+											if (minute + (hour * 60) <= m[x] + c[x] + (h[x] * 60)) {
+												tempminute = m[x] + c[x] + (h[x] * 60) - (minute + (hour * 60));
+												tempclass = c[x];
+												break;
+											}
+										}
+									}
+									if (tempminute == -1) {
+										document.getElementById("classover").style.width = "0" + '%';
+										document.getElementById("classover").innerHTML = "已经下课！";
+									}
+									else {
+										document.getElementById("classover").style.width = (tempminute / tempclass) * 100 + '%';
+										document.getElementById("classover").innerHTML = "距离下课还有" + tempminute + "分钟";
+									}
+									if (hour < 10) hour = "0" + hour;
+									if (minute < 10) minute = "0" + minute;
+									document.getElementById("time").innerHTML = hour + ":" + minute;
+								}
+								class1();
+								var retime = window.setInterval(function () { class1(); }, 10000);
+							</script>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="d-flex justify-content-end h-75 w-100">
+			<div class="p-2 flex-grow-1">
+				<div>
+					<div class="container-fluid">
+						<table class="table table-borderless" style="table-layout:fixed;">
+							<tr>
+								<td>
+									<div class="card borderless shadow blur"
+										onmouseover="this.className='card border-primary shadow-lg blur'"
+										onmouseout="this.className='card borderless shadow blur'"
+										onclick="window.location.href='./PPT.html';">
+										<div class="card-img-top borderless rounded-lg zoomImage"
+											style="background-image: url('images/ppt.png')" alt="Card image cap"></div>
+										<div class="card-body">
+											<h5 class="card-title" style="white-space: nowrap;">控制PowerPoint</h5>
+											<p class="card-text" style="overflow-x:auto;white-space: nowrap;">
+												使用此工具控制PowerPoint。</p>
+										</div>
+									</div>
+								</td>
+								<td>
+									<div class="card borderless shadow blur"
+										onmouseover="this.className='card border-primary shadow-lg blur'"
+										onmouseout="this.className='card borderless shadow blur'">
+										<div id="demo" class="carousel slide h-100" data-ride="carousel">
+											<div class="carousel-inner">
+												<div class="carousel-item active card-img-top borderless rounded-lg zoomImage"
+													style="background-image: url('images/baidu.png');"
+													onclick="document.getElementById('ifra').src='/run start http://www.baidu.com/';">
+
+												</div>
+												<div class="carousel-item card-img-top borderless rounded-lg zoomImage"
+													style="background-image: url('images/bing.jpg');"
+													onclick="document.getElementById('ifra').src='/run start http://cn.bing.com/';">
+												</div>
+												<div class="carousel-item card-img-top borderless rounded-lg zoomImage"
+													style="background-image: url('images/google.png');"
+													onclick="document.getElementById('ifra').src='/run start http://www.google.com/';">
+												</div>
+											</div>
+											<a class=" carousel-control-prev blur" href="#demo" data-slide="prev"
+												style="background:#0000001f"
+												onmouseout="this.style='background:#0000001f'"
+												onmouseover="this.style='background:#0000004f'">
+												<span class="carousel-control-prev-icon"></span>
+											</a>
+											<a class="carousel-control-next blur" href="#demo" data-slide="next"
+												style="background:#0000001f"
+												onmouseout="this.style='background:#0000001f'"
+												onmouseover="this.style='background:#0000004f'">
+												<span class="carousel-control-next-icon"></span>
+											</a>
+										</div>
+										<div class="" style="background-image: url('images/he.jpg')"
+											alt="Card image cap"></div>
+										<div class="card-body">
+											<h5 class="card-title" style="white-space: nowrap;">搜索</h5>
+											<p class="card-text" style="overflow-x:auto;white-space: nowrap;">
+												使用搜索引擎搜索。</p>
+										</div>
+									</div>
+								</td>
+								<td>
+									<div class="card borderless shadow blur"
+										onmouseover="this.className='card border-primary shadow-lg blur'"
+										onmouseout="this.className='card borderless shadow blur'"
+										onclick="window.location.href='./keyboard.html';">
+										<div class="card-img-top borderless rounded-lg zoomImage"
+											style="background-image: url('images/keyboard.svg')" alt="Card image cap">
+										</div>
+										<div class="card-body">
+											<h5 class="card-title" style="white-space: nowrap;">键鼠控制</h5>
+											<p class="card-text" style="overflow-x:auto;white-space: nowrap;">
+												使用此工具控制电脑。</p>
+										</div>
+									</div>
+								</td>
+							</tr>
+						</table>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<script src="loadAddon.js"></script>
+</body>
+
+</html>
