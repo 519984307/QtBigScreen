@@ -4,3 +4,20 @@
 [![Stars](https://raster.shields.io/github/stars/cheese-233/QtBigScreen.png)](https://github.com/cheese-233/QtBigScreen)
 
 A web server to control the bigscreen,Using [Qtwebserver](http://stefanfrings.de/qtwebapp/index-en.html) and [bootstrap](https://github.com/twbs/bootstrap).
+
+## Build
+build passing use Qt6+MSVC2019
+
+Only work with Windows.
+
+## to do
+- [ ] add english version
+
+- [x] add addons
+
+- [ ] more notes
+
+## Copyright and license
+© cheese-233 
+
+Code released under the [GNU General Public License v3.0](https://github.com/cheese-233/QtBigScreen/blob/main/LICENSE) License.
