@@ -1,6 +1,7 @@
 ﻿#include "addon.h"
 #include <QSettings>
 #include <QtXml>
+#include "Toast.h"
 
 addon::addon(QObject *parent)
     : QObject{parent}
@@ -151,6 +152,8 @@ bool XCopyFile(QString source, QString destination)
     return false;
 }
 int TableTr=0;
+int NavTr = 0;
+int SettingTr=0;
 int LastTr=0;
 bool CopyAddons(QString configDir){
     QString newDir = MainBinDir+"/real_docroot/addon_"+QDir(configDir).dirName();
@@ -169,14 +172,15 @@ bool CopyAddons(QString configDir){
     QString body_title="";
     QString body_pic="";
     QString body_text="";
-    if(!(ini.value("ChangeIndex/body_title",0) == 0)){
+    if(!(ini.value("ChangeIndex/body_title").isNull())){
         hascard = 1;
         body_title=ini.value("ChangeIndex/body_title").toByteArray();
         body_pic=ini.value("ChangeIndex/body_pic").toByteArray();
         body_text=ini.value("ChangeIndex/body_text").toByteArray();
     }
-    if(ini.value("Exec/exec") != NULL){
+    if(!(ini.value("Exec/exec").isNull())){
         QString program = ini.value("Exec/exec").toString();
+        qDebug() << "Using program " << program;
         QProcess * mProcess = new QProcess;
         mProcess->setProcessChannelMode(QProcess::MergedChannels);
         int background = 0;
@@ -204,24 +208,26 @@ bool CopyAddons(QString configDir){
     }
     bool isNavbar = 0;
     QString navbar_name;
-    if(ini.value("navbar/name") != NULL){
+    if(!(ini.value("navbar/name").isNull())){
         navbar_name = ini.value("navbar/name").toString();
         isNavbar = 1;
     }
-    ini.beginGroup("Setting");
-    QStringList SettingskeyList = ini.allKeys();
-    ini.endGroup();
-    //end of read
-    QFile js_file = addonfolder+"\\..\\real_docroot\\loadAddon.js";
-    if(!js_file.open(QFile::WriteOnly | QFile::Append)){
-         qFatal("Can't open js file "+js_file.fileName().toLocal8Bit());
-         return 1;
+    bool has_setting = 0;
+    QString SettingName;
+    if(!(ini.value("Setting/name").isNull())){
+        SettingName = ini.value("Setting/name").toString();
+        has_setting = 1;
     }
-    QTextStream outs(&js_file);
-    outs << "//This file is auto generate by QtBigScreen." << Qt::endl;
-    outs << "//Your changes will NOT be saved!!!" << Qt::endl;
+    //end of read
     if(hascard == 1){
-        qDebug() << body_title;
+        QFile js_file = addonfolder+"\\..\\real_docroot\\loadAddon.js";
+        if(!js_file.open(QFile::WriteOnly | QFile::Append)){
+             qFatal("Can't open js file "+js_file.fileName().toLocal8Bit());
+             return 1;
+        }
+        QTextStream outs(&js_file);
+        outs << "//This file is auto generate by QtBigScreen." << Qt::endl;
+        outs << "//Your changes will NOT be saved!!!" << Qt::endl;
         QString img = ("/addon_"+QDir(configDir).dirName()+"/"+body_pic);
         if(TableTr % 3 == 0 || TableTr == 0){
             outs << ("var tr_"+std::to_string(TableTr)+" = document.createElement('tr');").c_str() << Qt::endl;
@@ -282,19 +288,64 @@ bool CopyAddons(QString configDir){
             outs << ("div_card_body_"+std::to_string(TableTr)+".appendChild(card_text_"+std::to_string(TableTr)+");").c_str() << Qt::endl;
         }
         TableTr++;
+        js_file.close();
     }
     if(isNavbar){
-        outs << "var li = document.createElement('li');" << Qt:: endl;
-        outs << "li.className = 'nav-item'" << Qt:: endl;
-        outs << "var a = document.createElement('a');" << Qt:: endl;
-        outs << "a.className = 'nav-link';" << Qt:: endl;
-        outs << ("a.href = '"+("/addon_"+QDir(configDir).dirName()+"/"+html).toStdString()+"';").c_str() << Qt:: endl;
-        outs << ("a.innerHTML = '"+navbar_name.toStdString()+"';").c_str() << Qt:: endl;
-        outs << "li.appendChild(a);" << Qt:: endl;
-        outs << "document.getElementsByTagName('ul')[0].appendChild(li);" << Qt:: endl;
+        QFile js_file = addonfolder+"\\..\\real_docroot\\LoadNavBar.js";
+        if(!js_file.open(QFile::WriteOnly | QFile::Append)){
+             qFatal("Can't open js file "+js_file.fileName().toLocal8Bit());
+             return 1;
+        }
+        QTextStream outs(&js_file);
+        outs << "//This file is auto generate by QtBigScreen." << Qt::endl;
+        outs << "//Your changes will NOT be saved!!!" << Qt::endl;
+        outs << ("var li_"+std::to_string(NavTr)+" = document.createElement('li');").c_str() << Qt:: endl;
+        outs << ("li_"+std::to_string(NavTr)+".className = 'nav-item'").c_str() << Qt:: endl;
+        outs << ("var a_"+std::to_string(NavTr)+" = document.createElement('a');").c_str() << Qt:: endl;
+        outs << ("a_"+std::to_string(NavTr)+".className = 'nav-link';").c_str() << Qt:: endl;
+        outs << ("a_"+std::to_string(NavTr)+".href = '"+("/addon_"+QDir(configDir).dirName()+"/"+html).toStdString()+"';").c_str() << Qt:: endl;
+        outs << ("a_"+std::to_string(NavTr)+".innerHTML = '"+navbar_name.toStdString()+"';").c_str() << Qt:: endl;
+        outs << ("li_"+std::to_string(NavTr)+".appendChild(a_"+std::to_string(NavTr)+");").c_str() << Qt:: endl;
+        outs << ("document.getElementsByTagName('ul')[0].appendChild(li_"+std::to_string(NavTr)+");").c_str() << Qt:: endl;
+        js_file.close();
+        NavTr++;
     }
-    outs << Qt::flush;
-    js_file.close();
+    if(has_setting){
+        QFile js_file = addonfolder+"\\..\\real_docroot\\loadSetting.js";
+        if(!js_file.open(QFile::WriteOnly | QFile::Append)){
+             qFatal("Can't open js file "+js_file.fileName().toLocal8Bit());
+             return 1;
+        }
+        QTextStream outs(&js_file);
+        outs << ("var set_div_"+std::to_string(NavTr)+" = document.createElement('div');").c_str() << Qt::endl;
+        outs << ("set_div_"+std::to_string(NavTr)+".className = 'container mt-3 align-content-center col-lg-7 card';").c_str() << Qt::endl;
+        outs << ("set_div_"+std::to_string(NavTr)+".style = 'margin: 0 auto;background-color:rgba(255, 255, 255, 0.6);';").c_str() << Qt::endl;
+        outs << ("var set_body_"+std::to_string(NavTr)+" = document.createElement('div');").c_str() << Qt::endl;
+        outs << ("set_body_"+std::to_string(NavTr)+".className = 'card-body';").c_str() << Qt::endl;
+        outs << ("var set_text_"+std::to_string(NavTr)+" = document.createElement('p');").c_str() << Qt::endl;
+        outs << ("set_text_"+std::to_string(NavTr)+".className = 'card-text';").c_str() << Qt::endl;
+        outs << ("set_text_"+std::to_string(NavTr)+".innerText = '"+SettingName.toStdString()+"';").c_str() << Qt::endl;
+        outs << ("set_div_"+std::to_string(NavTr)+".appendChild(set_body_"+std::to_string(NavTr)+");").c_str() << Qt::endl;
+        outs << ("set_body_"+std::to_string(NavTr)+".appendChild(set_text_"+std::to_string(NavTr)+");").c_str() << Qt::endl;
+        outs << ("document.getElementById('add_card').appendChild(set_div_"+std::to_string(NavTr)+");").c_str() << Qt::endl;
+        int i = 0;
+        ini.beginGroup("Setting");
+        QStringList SettingskeyList = ini.allKeys();
+        foreach(QString Setting,SettingskeyList){
+            if(Setting == "name"){
+                continue;
+            }
+            else{
+                outs << ("var set_set_"+std::to_string(NavTr)+"_"+std::to_string(i)+" = document.createElement('a');").c_str() << Qt::endl;
+                outs << ("set_set_"+std::to_string(NavTr)+"_"+std::to_string(i)+".href = '"+ini.value(Setting).toString().toStdString()+"';").c_str() << Qt::endl;
+                outs << ("set_set_"+std::to_string(NavTr)+"_"+std::to_string(i)+".innerText = '"+Setting.toStdString()+"';") .c_str()<< Qt::endl;
+                outs << ("set_body_"+std::to_string(NavTr)+".appendChild(set_set_"+std::to_string(NavTr)+"_"+std::to_string(i)+");").c_str() << Qt::endl;
+                i++;
+            }
+        }
+        ini.endGroup();
+        js_file.close();
+    }
     QDir::setCurrent(QCoreApplication::applicationDirPath());
     return 0;
 }
@@ -304,9 +355,12 @@ bool addon::init()
     QStringList addons = FindFile(addonfolder);
     qDebug() << "Using addon(s):" << addons;
     QString addon;
+    int i=0;
     foreach(addon,addons){
+        i++;
         CopyAddons(addon);
         qDebug() << "Copy addons "+addon;
     }
+    Toast::showTip(QString::number(i)+"个插件加载成功!");
     return 0;
 }

@@ -175,23 +175,6 @@ void RequestMapper::service(HttpRequest& request, HttpResponse& response)
             system("TASKKILL /F /PID "+QByteArray::number(a)+" /T");
         }
     }
-    else if(path == ("/vnc")){
-        #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-            QMultiMapIterator<QByteArray,QByteArray> i(request.getHeaderMap());
-        #else
-            QMapIterator<QByteArray,QByteArray> i(request.getHeaderMap());
-        #endif
-        QByteArray q;
-        while (i.hasNext())
-        {
-            i.next();
-            if(i.key() == "host"){
-                q = i.value();
-                break;
-            }
-        }
-        response.redirect("http://"+q.split(':')[0]+":9006/");
-    }
     // All other pathes are mapped to the static file controller.
     // In this case, a single instance is used for multiple requests.
     else

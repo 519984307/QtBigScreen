@@ -45,43 +45,6 @@ QString searchConfigFile()
     qFatal("Cannot find config file %s",qPrintable(fileName));
     return nullptr;
 }
-QString fileName("jsmpeg-vnc.exe");
-void GetVNC()
-{
-    QString binDir=QCoreApplication::applicationDirPath();
-    QString dir;
-
-
-    QStringList searchList;
-    searchList.append(binDir);
-    searchList.append(binDir+"/etc/vnc");
-    searchList.append("./etc/vnc");
-    searchList.append(binDir+"/../etc/vnc");
-    searchList.append(binDir+"/../QtBigScreen/etc/vnc");
-    searchList.append(binDir+"\\..\\..\\QtBigScreen\\etc\\vnc");
-    searchList.append(QDir::rootPath()+"etc/vnc");
-    searchList.append(QDir::rootPath()+"/vnc");
-
-    foreach (dir, searchList)
-    {
-        QFile file(dir+"/"+fileName);
-        if (file.exists())
-        {
-            std::string t;
-            int nScreenWidth = GetSystemMetrics(SM_CXSCREEN);
-            int nScreenHeight = GetSystemMetrics(SM_CYSCREEN);
-            QString s = (std::to_string(nScreenWidth/3*2) + "x" + std::to_string(nScreenHeight/3*2)).c_str();
-            QString st = (std::to_string(nScreenWidth)+","+std::to_string(nScreenHeight)).c_str();
-            QString program = "./"+fileName+" -b 1000 -p 9006 -f 30 -s "+s+" -c 0,0,"+st+" \"desktop\"";
-            qDebug("Using vnc %s",qPrintable(program));
-            QDir::setCurrent(dir);
-            myPro.start(program);
-            QDir::setCurrent(QApplication::applicationDirPath());
-            break;
-        }
-    }
-}
-
 bool xCopyFile(QString source, QString destination)
 {
     QDir source_dir(source);
@@ -107,6 +70,17 @@ int main(int argc, char *argv[])
 {
     QApplication app(argc,argv);
     QApplication::setQuitOnLastWindowClosed(false);
+    HANDLE hMutex = CreateMutex(NULL, TRUE, LPCWSTR(app.applicationName().toStdString().c_str()));
+    if(hMutex != NULL)
+    {
+        if(GetLastError() == ERROR_ALREADY_EXISTS)
+        {
+            Toast::showTip("程序已经在运行!");
+            int a = GetCurrentProcessId();
+            system("TASKKILL /F /PID "+QByteArray::number(a)+" /T");
+            return 1;
+        }
+    }
     app.setApplicationName("Server");
     // Find the configuration file
     QString configFileName=searchConfigFile();
@@ -129,8 +103,6 @@ int main(int argc, char *argv[])
 
     icon i;
     i.showicon();
-
-//    GetVNC();
     initRealDocroot();
     addon ad;
     ad.BinDir(dir1);
