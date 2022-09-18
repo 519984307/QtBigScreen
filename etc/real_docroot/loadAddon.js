@@ -1,5 +1,13 @@
 //This file is auto generate by QtBigScreen.
 //Your changes will NOT be saved!!!
+var li = document.createElement('li');
+li.className = 'nav-item'
+var a = document.createElement('a');
+a.className = 'nav-link';
+a.href = '/addon_About/about.html';
+a.innerHTML = '关于';
+li.appendChild(a);
+document.getElementsByTagName('ul')[0].appendChild(li);
 //This file is auto generate by QtBigScreen.
 //Your changes will NOT be saved!!!
 var tr_0 = document.createElement('tr');
@@ -29,6 +37,14 @@ div_card_0.appendChild(div_card_body_0);
 div_card_body_0.appendChild(card_title_0);
 div_card_body_0.appendChild(card_text_0);
 document.getElementsByTagName('table')[0].appendChild(tr_0);
+var li = document.createElement('li');
+li.className = 'nav-item'
+var a = document.createElement('a');
+a.className = 'nav-link';
+a.href = '/addon_HelloWorld/1.html';
+a.innerHTML = '';
+li.appendChild(a);
+document.getElementsByTagName('ul')[0].appendChild(li);
 //This file is auto generate by QtBigScreen.
 //Your changes will NOT be saved!!!
 var tr_1 = document.createElement('tr');
@@ -57,3 +73,11 @@ div_card_1.appendChild(div_card_img_1);
 div_card_1.appendChild(div_card_body_1);
 div_card_body_1.appendChild(card_title_1);
 div_card_body_1.appendChild(card_text_1);
+var li = document.createElement('li');
+li.className = 'nav-item'
+var a = document.createElement('a');
+a.className = 'nav-link';
+a.href = '/addon_PowerPoint/PPT.html';
+a.innerHTML = '';
+li.appendChild(a);
+document.getElementsByTagName('ul')[0].appendChild(li);

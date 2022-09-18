@@ -203,8 +203,9 @@ bool CopyAddons(QString configDir){
         }
     }
     bool isNavbar = 0;
+    QString navbar_name;
     if(ini.value("navbar/name") != NULL){
-        QString navbar_name = ini.value("navbar/name").toString();
+        navbar_name = ini.value("navbar/name").toString();
         isNavbar = 1;
     }
     ini.beginGroup("Setting");
@@ -283,7 +284,14 @@ bool CopyAddons(QString configDir){
         TableTr++;
     }
     if(isNavbar){
-
+        outs << "var li = document.createElement('li');" << Qt:: endl;
+        outs << "li.className = 'nav-item'" << Qt:: endl;
+        outs << "var a = document.createElement('a');" << Qt:: endl;
+        outs << "a.className = 'nav-link';" << Qt:: endl;
+        outs << ("a.href = '"+("/addon_"+QDir(configDir).dirName()+"/"+html).toStdString()+"';").c_str() << Qt:: endl;
+        outs << ("a.innerHTML = '"+navbar_name.toStdString()+"';").c_str() << Qt:: endl;
+        outs << "li.appendChild(a);" << Qt:: endl;
+        outs << "document.getElementsByTagName('ul')[0].appendChild(li);" << Qt:: endl;
     }
     outs << Qt::flush;
     js_file.close();
